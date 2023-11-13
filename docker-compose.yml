@@ -1,0 +1,10 @@
+version: "3"
+services:
+    dudes-db:
+        image: postgres:latest
+        restart: on-failure
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Pa55word
+        ports:
+           - 5432:5432
