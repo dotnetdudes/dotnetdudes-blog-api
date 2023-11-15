@@ -18,6 +18,8 @@ namespace Dotnetdudes.Web.Blog.Api.Models
         public DateTime? Published { get; set; } // nullable datetime
 
         // constructor to create a new comment
+        //ignore warning message for CS8618: Non-nullable property 'Body' is uninitialized. Consider declaring the property as nullable.
+        #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         public Comment () { }
         public Comment(string body, string author, string email)
         {

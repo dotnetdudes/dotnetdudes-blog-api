@@ -32,6 +32,7 @@ namespace Dotnetdudes.Web.Blog.Api.Models
 
         public DateTime? Published { get; set; } // nullable datetime
 
+        #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         public Post() { }
 
         // constructor to create a new post
