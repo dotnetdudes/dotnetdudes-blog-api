@@ -28,16 +28,18 @@ using var db = app.Services.CreateScope().ServiceProvider.GetRequiredService<IDb
 db.Execute("CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, slug VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, body TEXT NOT NULL, author VARCHAR(255) NOT NULL, created TIMESTAMP NOT NULL, updated TIMESTAMP, published TIMESTAMP)");
 db.Execute("CREATE TABLE IF NOT EXISTS comments (id SERIAL PRIMARY KEY, postid INTEGER NOT NULL, body TEXT NOT NULL, author VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, created TIMESTAMP NOT NULL, updated TIMESTAMP, published TIMESTAMP)");
 // seed database with posts
-var posts = db.Query<Post>("SELECT * FROM posts");
-if (!posts.Any())
-{
-    db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('First Post', 'first-post', 'This is my first post', 'This is the body of my first post', 'Dotnetdude', '2021-01-01')");
-    db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Second Post', 'second-post', 'This is my second post', 'This is the body of my second post', 'Dotnetdude', '2021-01-02')");
-    db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Third Post', 'third-post', 'This is my third post', 'This is the body of my third post', 'Dotnetdude', '2021-01-03')");
-    db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Fourth Post', 'fourth-post', 'This is my fourth post', 'This is the body of my fourth post', 'Dotnetdude', '2021-01-04')");
-    db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Fifth Post', 'fifth-post', 'This is my fifth post', 'This is the body of my fifth post', 'Dotnetdude', '2021-01-05')");
-    db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Sixth Post', 'sixth-post', 'This is my sixth post', 'This is the body of my sixth post', 'Dotnetdude', '2021-01-06')");
-    db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Seventh Post', 'seventh-post', 'This is my seventh post', 'This is the body of my seventh post', 'Dotnetdude', '2021-01-07')");
+if (app.Environment.IsDevelopment()) { 
+    var posts = db.Query<Post>("SELECT * FROM posts");
+    if (!posts.Any())
+    {
+        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('First Post', 'first-post', 'This is my first post', 'This is the body of my first post', 'Dotnetdude', '2021-01-01')");
+        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Second Post', 'second-post', 'This is my second post', 'This is the body of my second post', 'Dotnetdude', '2021-01-02')");
+        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Third Post', 'third-post', 'This is my third post', 'This is the body of my third post', 'Dotnetdude', '2021-01-03')");
+        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Fourth Post', 'fourth-post', 'This is my fourth post', 'This is the body of my fourth post', 'Dotnetdude', '2021-01-04')");
+        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Fifth Post', 'fifth-post', 'This is my fifth post', 'This is the body of my fifth post', 'Dotnetdude', '2021-01-05')");
+        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Sixth Post', 'sixth-post', 'This is my sixth post', 'This is the body of my sixth post', 'Dotnetdude', '2021-01-06')");
+        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Seventh Post', 'seventh-post', 'This is my seventh post', 'This is the body of my seventh post', 'Dotnetdude', '2021-01-07')");
+    }
 }
 
 // Configure the HTTP request pipeline.
@@ -170,7 +172,7 @@ app.MapDelete("/posts/{id}/comments/{commentId}", async (IDbConnection db, int i
 
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
