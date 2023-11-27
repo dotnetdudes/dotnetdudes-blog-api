@@ -1,5 +1,6 @@
 using Dapper;
 using Dotnetdudes.Web.Blog.Api.Models;
+using Dotnetdudes.Web.Blog.Api.Routes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Npgsql;
 using System.Data;
@@ -51,108 +52,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// add route for getting all posts
-app.MapGet("/posts", async (IDbConnection db) =>
-{
-    // get all posts from database
-    var posts = await db.QueryAsync<Post>("SELECT * FROM posts");
-    return posts;
-});
-
-// add route for getting all posts with comments
-app.MapGet("/posts/comments", async (IDbConnection db) =>
-{
-    // get all posts from database
-    var posts = await db.QueryAsync<Post>("SELECT * FROM posts");
-    // get all comments from database
-    var comments = await db.QueryAsync<Comment>("SELECT * FROM comments");
-    // loop through each post
-    foreach (var post in posts)
-    {
-        // get comments for post
-        var postComments = comments.Where(c => c.PostId == post.Id).ToArray();
-        // set comments property on post
-        post.Comments = postComments;
-    }
-    return posts;
-});
-
-// add route for getting a single post
-app.MapGet("/posts/{id}", async (IDbConnection db, int id) =>
-{
-    // get post from database
-    var post = await db.QueryFirstOrDefaultAsync<Post>("SELECT * FROM posts WHERE id = @id", new { id });
-    return post is null ? Results.NotFound() : TypedResults.Ok(post);
-});
-
-// add route for getting a single post with comments
-app.MapGet("/posts/{id}/comments", async (IDbConnection db, int id) =>
-{
-    // get post from database
-    var post = await db.QueryFirstOrDefaultAsync<Post>("SELECT * FROM posts WHERE id = @id", new { id });
-    // get comments from database
-    var comments = await db.QueryAsync<Comment>("SELECT * FROM comments WHERE postid = @id", new { id });
-    // check if post is null
-    if (post is null)
-    {
-        return Results.NotFound();
-    }
-    // set comments property on post
-    post.Comments = comments.ToArray();
-    return post is null ? Results.NotFound() : TypedResults.Ok(post);
-});
-
-// add route for creating a new post
-app.MapPost("/posts", async (IDbConnection db, Post post) =>
-{
-    // insert post into database
-    post.Id = await db.QuerySingleAsync<int>("INSERT INTO posts (title, description, body, author, created) VALUES (@Title, @Description, @Body, @Author, @Created) RETURNING id", post);
-    return Results.Created($"/posts/{post.Id}", post);
-});
-
-// add route for updating a post
-app.MapPut("/posts/{id}", async (IDbConnection db, int id, Post post) =>
-{
-    // set the updated time
-    post.Updated = DateTime.Now;
-    // update post in database
-    var result = await db.ExecuteAsync("UPDATE posts SET title = @Title, description = @Description, body = @Body, author = @Author, updated = @Updated, published = @Published WHERE id = @Id", new { id, post.Title, post.Description, post.Body, post.Author, post.Updated, post.Published });
-    return TypedResults.Ok(post);
-});
-
-// add route for deleting a post
-app.MapDelete("/posts/{id}", async (IDbConnection db, int id) =>
-{
-    // delete post from database
-    var result = await db.ExecuteAsync("DELETE FROM posts WHERE id = @id", new { id });
-    return Results.NoContent();
-});
-
-// add route for creating a new comment
-app.MapPost("/posts/{id}/comments", async (IDbConnection db, int id, Comment comment) =>
-{
-    // insert comment into database
-    var result = await db.ExecuteAsync("INSERT INTO comments (postid, body, author, email, created) VALUES (@PostId, @Body, @Author, @Email, @Created)", new { id, comment.Body, comment.Author, comment.Email, comment.Created });
-    return Results.Created($"/posts/{id}/comments/{comment.Id}", comment);
-});
-
-// add route for updating a comment
-app.MapPut("/posts/{id}/comments/{commentId}", async (IDbConnection db, int id, int commentId, Comment comment) =>
-{
-    // update comment in database
-    var result = await db.ExecuteAsync("UPDATE comments SET body = @Body, author = @Author, email = @Email, updated = @Updated, published = @Published WHERE id = @CommentId", new { id, commentId, comment.Body, comment.Author, comment.Email, comment.Updated, comment.Published });
-    return TypedResults.Ok(comment);
-});
-
-// add route for deleting a comment
-app.MapDelete("/posts/{id}/comments/{commentId}", async (IDbConnection db, int id, int commentId) =>
-{
-    // delete comment from database
-    var result = await db.ExecuteAsync("DELETE FROM comments WHERE id = @commentId", new { commentId });
-    return Results.NoContent();
-});
+// todoV1 endpoints
+app.MapGroup("/posts/v1")
+    .MapBlogEndpointsV1()
+    .WithTags("Blog V1 Endpoints");
 
 app.Run();
 
 public partial class Program { }
-

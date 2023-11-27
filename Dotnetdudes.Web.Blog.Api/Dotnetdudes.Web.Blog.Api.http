@@ -1,10 +1,10 @@
 ﻿@Dotnetdudes.Web.Blog.Api_HostAddress = https://localhost:7262
 
-GET {{Dotnetdudes.Web.Blog.Api_HostAddress}}/posts
+GET {{Dotnetdudes.Web.Blog.Api_HostAddress}}/posts/v1
 
 ###
 
-POST {{Dotnetdudes.Web.Blog.Api_HostAddress}}/posts
+POST {{Dotnetdudes.Web.Blog.Api_HostAddress}}/posts/v1
 Content-Type: application/json
 
 {
@@ -15,6 +15,6 @@ Content-Type: application/json
 }
 ###
 
-GET {{Dotnetdudes.Web.Blog.Api_HostAddress}}/posts/1
+GET {{Dotnetdudes.Web.Blog.Api_HostAddress}}/posts/v1/1
 
 ###
