@@ -51,33 +51,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
 // add route for getting all posts
 app.MapGet("/posts", async (IDbConnection db) =>
 {
     // get all posts from database
     var posts = await db.QueryAsync<Post>("SELECT * FROM posts");
     return posts;
-});
+}).WithName("GetAllPosts");
 
 // add route for getting all posts with comments
 app.MapGet("/posts/comments", async (IDbConnection db) =>
@@ -102,7 +82,7 @@ app.MapGet("/posts/{id}", async (IDbConnection db, int id) =>
 {
     // get post from database
     var post = await db.QueryFirstOrDefaultAsync<Post>("SELECT * FROM posts WHERE id = @id", new { id });
-    return post is null ? Results.NotFound() : Results.Ok(post);
+    return post is null ? Results.NotFound() : TypedResults.Ok(post);
 });
 
 // add route for getting a single post with comments
@@ -119,7 +99,7 @@ app.MapGet("/posts/{id}/comments", async (IDbConnection db, int id) =>
     }
     // set comments property on post
     post.Comments = comments.ToArray();
-    return post is null ? Results.NotFound() : Results.Ok(post);
+    return post is null ? Results.NotFound() : TypedResults.Ok(post);
 });
 
 // add route for creating a new post
@@ -135,7 +115,7 @@ app.MapPut("/posts/{id}", async (IDbConnection db, int id, Post post) =>
 {
     // update post in database
     var result = await db.ExecuteAsync("UPDATE posts SET title = @Title, slug = @Slug, description = @Description, body = @Body, author = @Author, updated = @Updated, published = @Published WHERE id = @Id", new { id, post.Title, post.Slug, post.Description, post.Body, post.Author, post.Updated, post.Published });
-    return Results.Ok(post);
+    return TypedResults.Ok(post);
 });
 
 // add route for deleting a post
@@ -159,7 +139,7 @@ app.MapPut("/posts/{id}/comments/{commentId}", async (IDbConnection db, int id, 
 {
     // update comment in database
     var result = await db.ExecuteAsync("UPDATE comments SET body = @Body, author = @Author, email = @Email, updated = @Updated, published = @Published WHERE id = @CommentId", new { id, commentId, comment.Body, comment.Author, comment.Email, comment.Updated, comment.Published });
-    return Results.Ok(comment);
+    return TypedResults.Ok(comment);
 });
 
 // add route for deleting a comment
@@ -172,9 +152,5 @@ app.MapDelete("/posts/{id}/comments/{commentId}", async (IDbConnection db, int i
 
 app.Run();
 
-public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
-
 public partial class Program { }
+
