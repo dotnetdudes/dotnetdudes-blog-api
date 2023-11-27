@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
@@ -11,9 +12,11 @@ namespace Dotnetdudes.Web.Blog.Api.Models
     {
         // generate properties of blog post
         public int Id { get; set; }
-        public string Title { get; set; }
-        public string Slug { get; } // url friendly version of title
-        public string Description { get; set; }
+        [Required]
+        public string Title { get; set; } = String.Empty;
+        public string Slug { get { return CreateSlug(Title); } } // url friendly version of title
+        [Required]
+        public string Description { get; set; } = String.Empty;
 
         // property for a list of tags
         public string[] Tags { get; set; } = Array.Empty<string>();
@@ -25,14 +28,15 @@ namespace Dotnetdudes.Web.Blog.Api.Models
         public Comment[] Comments { get; set; } = Array.Empty<Comment>();
 
         // content of blog post
-        public string Body { get; set; }
-        public string Author { get; set; }
-        public DateTime Created { get; set; }
+        [Required]
+        public string Body { get; set; } = String.Empty;
+        [Required]
+        public string Author { get; set; } = String.Empty;
+        public DateTime Created { get; set; } = DateTime.Now;
         public DateTime? Updated { get; set; } // nullable datetime
 
         public DateTime? Published { get; set; } // nullable datetime
 
-        #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         public Post() { }
 
         // constructor to create a new post
@@ -42,14 +46,13 @@ namespace Dotnetdudes.Web.Blog.Api.Models
             Description = description;
             Body = body;
             Author = author;
-            Created = DateTime.Now;
-            Slug = CreateSlug(title);
 
         }
 
         public static string CreateSlug(string title)
         {
             title = Regex.Replace(title.ToLower(), @"[^a-z0-9\s-]", "") ?? string.Empty;
+            title = title.Replace(" ", "-");
             title = RemoveDiacritics(title);
             title = RemoveReservedUrlCharacters(title);
 

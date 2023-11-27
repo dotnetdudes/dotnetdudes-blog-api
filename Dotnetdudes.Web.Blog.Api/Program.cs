@@ -57,7 +57,7 @@ app.MapGet("/posts", async (IDbConnection db) =>
     // get all posts from database
     var posts = await db.QueryAsync<Post>("SELECT * FROM posts");
     return posts;
-}).WithName("GetAllPosts");
+});
 
 // add route for getting all posts with comments
 app.MapGet("/posts/comments", async (IDbConnection db) =>
@@ -113,6 +113,8 @@ app.MapPost("/posts", async (IDbConnection db, Post post) =>
 // add route for updating a post
 app.MapPut("/posts/{id}", async (IDbConnection db, int id, Post post) =>
 {
+    // set the updated time
+    post.Updated = DateTime.Now;
     // update post in database
     var result = await db.ExecuteAsync("UPDATE posts SET title = @Title, slug = @Slug, description = @Description, body = @Body, author = @Author, updated = @Updated, published = @Published WHERE id = @Id", new { id, post.Title, post.Slug, post.Description, post.Body, post.Author, post.Updated, post.Published });
     return TypedResults.Ok(post);
