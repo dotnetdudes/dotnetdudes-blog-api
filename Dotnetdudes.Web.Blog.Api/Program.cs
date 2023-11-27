@@ -25,20 +25,20 @@ var app = builder.Build();
 
 // ensure database is created
 using var db = app.Services.CreateScope().ServiceProvider.GetRequiredService<IDbConnection>();
-db.Execute("CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, slug VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, body TEXT NOT NULL, author VARCHAR(255) NOT NULL, created TIMESTAMP NOT NULL, updated TIMESTAMP, published TIMESTAMP)");
+db.Execute("CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, body TEXT NOT NULL, author VARCHAR(255) NOT NULL, created TIMESTAMP NOT NULL, updated TIMESTAMP, published TIMESTAMP)");
 db.Execute("CREATE TABLE IF NOT EXISTS comments (id SERIAL PRIMARY KEY, postid INTEGER NOT NULL, body TEXT NOT NULL, author VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, created TIMESTAMP NOT NULL, updated TIMESTAMP, published TIMESTAMP)");
 // seed database with posts
 if (app.Environment.IsDevelopment()) { 
     var posts = db.Query<Post>("SELECT * FROM posts");
     if (!posts.Any())
     {
-        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('First Post', 'first-post', 'This is my first post', 'This is the body of my first post', 'Dotnetdude', '2021-01-01')");
-        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Second Post', 'second-post', 'This is my second post', 'This is the body of my second post', 'Dotnetdude', '2021-01-02')");
-        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Third Post', 'third-post', 'This is my third post', 'This is the body of my third post', 'Dotnetdude', '2021-01-03')");
-        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Fourth Post', 'fourth-post', 'This is my fourth post', 'This is the body of my fourth post', 'Dotnetdude', '2021-01-04')");
-        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Fifth Post', 'fifth-post', 'This is my fifth post', 'This is the body of my fifth post', 'Dotnetdude', '2021-01-05')");
-        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Sixth Post', 'sixth-post', 'This is my sixth post', 'This is the body of my sixth post', 'Dotnetdude', '2021-01-06')");
-        db.Execute("INSERT INTO posts (title, slug, description, body, author, created) VALUES ('Seventh Post', 'seventh-post', 'This is my seventh post', 'This is the body of my seventh post', 'Dotnetdude', '2021-01-07')");
+        db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('First Post', 'This is my first post', 'This is the body of my first post', 'Dotnetdude', '2021-01-01')");
+        db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Second Post', 'This is my second post', 'This is the body of my second post', 'Dotnetdude', '2021-01-02')");
+        db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Third Post', 'This is my third post', 'This is the body of my third post', 'Dotnetdude', '2021-01-03')");
+        db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Fourth Post', 'This is my fourth post', 'This is the body of my fourth post', 'Dotnetdude', '2021-01-04')");
+        db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Fifth Post', 'This is my fifth post', 'This is the body of my fifth post', 'Dotnetdude', '2021-01-05')");
+        db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Sixth Post', 'This is my sixth post', 'This is the body of my sixth post', 'Dotnetdude', '2021-01-06')");
+        db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Seventh Post', 'This is my seventh post', 'This is the body of my seventh post', 'Dotnetdude', '2021-01-07')");
     }
 }
 
@@ -106,7 +106,7 @@ app.MapGet("/posts/{id}/comments", async (IDbConnection db, int id) =>
 app.MapPost("/posts", async (IDbConnection db, Post post) =>
 {
     // insert post into database
-    var result = await db.ExecuteAsync("INSERT INTO posts (title, slug, description, body, author, created) VALUES (@Title, @Slug, @Description, @Body, @Author, @Created)", post);
+    post.Id = await db.QuerySingleAsync<int>("INSERT INTO posts (title, description, body, author, created) VALUES (@Title, @Description, @Body, @Author, @Created) RETURNING id", post);
     return Results.Created($"/posts/{post.Id}", post);
 });
 
@@ -116,7 +116,7 @@ app.MapPut("/posts/{id}", async (IDbConnection db, int id, Post post) =>
     // set the updated time
     post.Updated = DateTime.Now;
     // update post in database
-    var result = await db.ExecuteAsync("UPDATE posts SET title = @Title, slug = @Slug, description = @Description, body = @Body, author = @Author, updated = @Updated, published = @Published WHERE id = @Id", new { id, post.Title, post.Slug, post.Description, post.Body, post.Author, post.Updated, post.Published });
+    var result = await db.ExecuteAsync("UPDATE posts SET title = @Title, description = @Description, body = @Body, author = @Author, updated = @Updated, published = @Published WHERE id = @Id", new { id, post.Title, post.Description, post.Body, post.Author, post.Updated, post.Published });
     return TypedResults.Ok(post);
 });
 

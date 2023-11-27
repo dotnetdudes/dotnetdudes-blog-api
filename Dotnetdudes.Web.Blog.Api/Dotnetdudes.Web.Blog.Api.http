@@ -14,3 +14,7 @@ Content-Type: application/json
   "author": "John Morton"
 }
 ###
+
+GET {{Dotnetdudes.Web.Blog.Api_HostAddress}}/posts/1
+
+###
