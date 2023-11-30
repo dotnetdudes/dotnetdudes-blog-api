@@ -94,15 +94,58 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             //
         } */
 
-        [Fact]
-        public async Task TestyTest()
-        {
-            await using var application = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { });
-            using var client = application.CreateClient();
+        // [Fact]
+        // public async Task TestyTest()
+        // {
+        //     await using var application = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { });
+        //     using var client = application.CreateClient();
 
-            var response = await client.GetAsync("/posts/v1");
-            var posts = await response.Content.ReadFromJsonAsync<Post[]>();
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        //     var response = await client.GetAsync("/posts/v1");
+        //     var posts = await response.Content.ReadFromJsonAsync<Post[]>();
+        //     Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        // }
+
+        [Fact]
+        public async Task GetPosts_ReturnsAllPosts()
+        {
+            // Arrange
+            var expectedPosts = new List<Post>
+            {
+                new Post { Id = 1, Title = "First Post" },
+                new Post { Id = 2, Title = "Second Post" }
+            };
+            _mockDbConnection.Setup(db => db.QueryAsync<Post>(It.IsAny<string>()))
+                .ReturnsAsync(expectedPosts);
+
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/posts");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            var posts = await response.Content.ReadAsAsync<IEnumerable<Post>>();
+            Assert.Equal(expectedPosts.Count, posts.Count());
         }
+
+        [Fact]
+        public async Task GetPostById_ReturnsPost()
+        {
+            // Arrange
+            var expectedPost = new Post { Id = 1, Title = "First Post" };
+            _mockDbConnection.Setup(db => db.QueryFirstOrDefaultAsync<Post>(It.IsAny<string>(), It.IsAny<object>(), null, null, null))
+                .ReturnsAsync(expectedPost);
+
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/posts/1");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            var post = await response.Content.ReadAsAsync<Post>();
+            Assert.Equal(expectedPost.Id, post.Id);
+        }
+
     }
 }
