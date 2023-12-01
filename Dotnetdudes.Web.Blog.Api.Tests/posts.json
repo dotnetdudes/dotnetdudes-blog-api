@@ -83,19 +83,5 @@
       "created": "2021-01-06T00:00:00",
       "updated": null,
       "published": null
-    },
-    {
-      "id": 7,
-      "title": "Seventh Post",
-      "slug": "seventh-post",
-      "description": "This is my seventh post",
-      "tags": [],
-      "categories": [],
-      "comments": [],
-      "body": "This is the body of my seventh post",
-      "author": "Dotnetdude",
-      "created": "2021-01-07T00:00:00",
-      "updated": null,
-      "published": null
     }
   ]

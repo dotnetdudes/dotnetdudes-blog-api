@@ -13,7 +13,7 @@ namespace Dotnetdudes.Web.Blog.Api.Models
         public string Body { get; set; }
         public string Author { get; set; }
         public string Email { get; set; }
-        public DateTime Created { get; set; }
+        public DateTime Created { get; set; } = DateTime.UtcNow; // default to current datetime
         public DateTime? Updated { get; set; } // nullable datetime
         public DateTime? Published { get; set; } // nullable datetime
 
@@ -26,7 +26,7 @@ namespace Dotnetdudes.Web.Blog.Api.Models
             Body = body;
             Author = author;
             Email = email;
-            Created = DateTime.Now;
+            Created = DateTime.UtcNow;
         }
 
         // get gravatar function to get the gravatar image url

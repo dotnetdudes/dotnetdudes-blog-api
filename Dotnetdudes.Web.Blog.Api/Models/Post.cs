@@ -32,7 +32,7 @@ namespace Dotnetdudes.Web.Blog.Api.Models
         public string Body { get; set; } = String.Empty;
         [Required]
         public string Author { get; set; } = String.Empty;
-        public DateTime Created { get; set; } = DateTime.Now;
+        public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime? Updated { get; set; } // nullable datetime
 
         public DateTime? Published { get; set; } // nullable datetime

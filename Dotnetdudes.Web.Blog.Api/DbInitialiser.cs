@@ -24,7 +24,12 @@ namespace Dotnetdudes.Web.Blog.Api
                 db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Fourth Post', 'This is my fourth post', 'This is the body of my fourth post', 'Dotnetdude', '2021-01-04')");
                 db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Fifth Post', 'This is my fifth post', 'This is the body of my fifth post', 'Dotnetdude', '2021-01-05')");
                 db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Sixth Post', 'This is my sixth post', 'This is the body of my sixth post', 'Dotnetdude', '2021-01-06')");
+                
+                db.Execute("INSERT INTO comments (postid, body, author, email, created) VALUES (1, 'This is the first comment on the first post', 'Dotnetdude','john@doe.com', '2021-01-06')");
+                db.Execute("INSERT INTO comments (postid, body, author, email, created) VALUES (1, 'This is the second comment on the first post', 'Dotnetdude','john@doe.com', '2021-01-06')");
+                db.Execute("INSERT INTO comments (postid, body, author, email, created) VALUES (1, 'This is the third comment on the first post', 'Dotnetdude','john@doe.com', '2021-01-06')");
+                db.Execute("INSERT INTO comments (postid, body, author, email, created) VALUES (2, 'This is the first comment on the second post', 'Dotnetdude','john@doe.com', '2021-01-06')");
             }
-        }
+        }        
     }
 }

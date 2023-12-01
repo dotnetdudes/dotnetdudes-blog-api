@@ -69,20 +69,28 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
             });
 
             // add route for updating a post
-            group.MapPut("/{id}", async (IDbConnection db, int id, Post post) =>
+            group.MapPut("/{id}", async Task<Results<Ok<Post>, NotFound>> (IDbConnection db, int id, Post post) =>
             {
                 // set the updated time
                 post.Updated = DateTime.Now;
                 // update post in database
                 var result = await db.ExecuteAsync("UPDATE posts SET title = @Title, description = @Description, body = @Body, author = @Author, updated = @Updated, published = @Published WHERE id = @Id", new { id, post.Title, post.Description, post.Body, post.Author, post.Updated, post.Published });
+                if (result == 0)
+                {
+                    return TypedResults.NotFound();
+                }
                 return TypedResults.Ok(post);
             });
 
             // add route for deleting a post
-            group.MapDelete("/{id}", async (IDbConnection db, int id) =>
+            group.MapDelete("/{id}", async Task<Results<NoContent, NotFound>> (IDbConnection db, int id) =>
             {
                 // delete post from database
                 var result = await db.ExecuteAsync("DELETE FROM posts WHERE id = @id", new { id });
+                if (result == 0)
+                {
+                    return TypedResults.NotFound();
+                }
                 return TypedResults.NoContent();
             });
 
