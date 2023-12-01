@@ -2,6 +2,7 @@
     {
       "id": 1,
       "title": "First Post",
+      "Title": "First Post",
       "slug": "first-post",
       "description": "This is my first post",
       "tags": [],

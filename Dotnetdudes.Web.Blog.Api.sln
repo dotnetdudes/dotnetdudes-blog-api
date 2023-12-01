@@ -8,10 +8,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6D96282B-7057-4EC6-A43A-A74148ADBF83}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		DockerDev\create-multiple-postgresql-databases.sh = DockerDev\create-multiple-postgresql-databases.sh
 		docker-compose.yml = docker-compose.yml
+		DockerDev\Dockerfile = DockerDev\Dockerfile
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnetdudes.Web.Blog.Api.Tests", "Dotnetdudes.Web.Blog.Api.Tests\Dotnetdudes.Web.Blog.Api.Tests.csproj", "{8F731F8E-D173-4F71-96E2-85D66B885465}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dotnetdudes.Web.Blog.Api.Tests", "Dotnetdudes.Web.Blog.Api.Tests\Dotnetdudes.Web.Blog.Api.Tests.csproj", "{8F731F8E-D173-4F71-96E2-85D66B885465}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

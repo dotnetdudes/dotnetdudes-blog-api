@@ -8,6 +8,7 @@ using Dotnetdudes.Web.Blog.Api.Models;
 using Dapper;
 using System.Net.Http.Json;
 using System.Reflection.Metadata.Ecma335;
+using System.Text.Json;
 
 namespace Dotnetdudes.Web.Blog.Api.Tests
 {
@@ -38,8 +39,11 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
         {
             // Arrange
             var client = _factory.CreateClient();
-            var expectedPosts = await System.Text.Json.JsonSerializer.DeserializeAsync<Post[]>(
-                System.IO.File.OpenRead("posts.json"));
+            using FileStream stream = File.OpenRead("posts.json");
+            var expectedPosts = await JsonSerializer.DeserializeAsync<Post[]>(stream, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
 
             // Act
             var response = await client.GetAsync("/posts/v1");
