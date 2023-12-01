@@ -1,6 +1,4 @@
-using Dapper;
 using Dotnetdudes.Web.Blog.Api;
-using Dotnetdudes.Web.Blog.Api.Models;
 using Dotnetdudes.Web.Blog.Api.Routes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Npgsql;
