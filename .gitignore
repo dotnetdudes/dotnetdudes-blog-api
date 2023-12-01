@@ -364,3 +364,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 Dotnetdudes.Web.Api/appsettings.Production.json
+
+.config/dotnet-tools.json
