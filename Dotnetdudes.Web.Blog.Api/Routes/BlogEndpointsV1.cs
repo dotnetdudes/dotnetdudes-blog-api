@@ -94,16 +94,28 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
                 return TypedResults.NoContent();
             });
 
+            // add route for getting a single comment
+            group.MapGet("/{id}/comments/{commentId}", async Task<Results<Ok<Comment>, NotFound>> (IDbConnection db, int id, int commentId) =>
+            {
+                // get comment from database
+                var comment = await db.QueryFirstOrDefaultAsync<Comment>("SELECT * FROM comments WHERE id = @commentId", new { commentId });
+                return comment is null ? TypedResults.NotFound() : TypedResults.Ok(comment);
+            });
+
             // add route for creating a new comment
-            group.MapPost("/{id}/comments", async (IDbConnection db, int id, Comment comment) =>
+            group.MapPost("/{id}/comments", async Task<Results<Created<Comment>, NotFound>> (IDbConnection db, int id, Comment comment) =>
             {
                 // insert comment into database
-                var result = await db.ExecuteAsync("INSERT INTO comments (postid, body, author, email, created) VALUES (@PostId, @Body, @Author, @Email, @Created)", new { id, comment.Body, comment.Author, comment.Email, comment.Created });
+                var result = await db.ExecuteAsync("INSERT INTO comments (postid, body, author, email, created) VALUES (@PostId, @Body, @Author, @Email, @Created)", new { comment.PostId, comment.Body, comment.Author, comment.Email, comment.Created });
+                if (result == 0)
+                {
+                    return TypedResults.NotFound();
+                }
                 return TypedResults.Created($"/{id}/comments/{comment.Id}", comment);
             });
 
             // add route for updating a comment
-            group.MapPut("/{id}/comments/{commentId}", async (IDbConnection db, int id, int commentId, Comment comment) =>
+            group.MapPut("/{id}/comments/{commentId}", async  (IDbConnection db, int id, int commentId, Comment comment) =>
             {
                 // update comment in database
                 var result = await db.ExecuteAsync("UPDATE comments SET body = @Body, author = @Author, email = @Email, updated = @Updated, published = @Published WHERE id = @CommentId", new { id, commentId, comment.Body, comment.Author, comment.Email, comment.Updated, comment.Published });
@@ -111,10 +123,14 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
             });
 
             // add route for deleting a comment
-            group.MapDelete("/{id}/comments/{commentId}", async (IDbConnection db, int id, int commentId) =>
+            group.MapDelete("/{id}/comments/{commentId}", async Task<Results<NoContent, NotFound>> (IDbConnection db, int id, int commentId) =>
             {
                 // delete comment from database
                 var result = await db.ExecuteAsync("DELETE FROM comments WHERE id = @commentId", new { commentId });
+                if (result == 0)
+                {
+                    return TypedResults.NotFound();
+                }
                 return TypedResults.NoContent();
             });
             return group;

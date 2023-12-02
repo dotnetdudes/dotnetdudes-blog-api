@@ -59,7 +59,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
         {
             // Arrange
             var client = _factory.CreateClient();
-            using FileStream stream = File.OpenRead("posts.json");
+            using FileStream stream = File.OpenRead("./Data/posts.json");
             var expectedPosts = await JsonSerializer.DeserializeAsync<Post[]>(stream, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
@@ -91,7 +91,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
         {
             // Arrange
             var client = _factory.CreateClient();
-            using FileStream stream = File.OpenRead("post.json");
+            using FileStream stream = File.OpenRead("./Data/post.json");
             var expectedPost = await JsonSerializer.DeserializeAsync<Post>(stream, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
@@ -277,7 +277,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
         {
             // Arrange
             var client = _factory.CreateClient();
-            using FileStream stream = File.OpenRead("comments.json");
+            using FileStream stream = File.OpenRead("./Data/comments.json");
             var expectedComments = await JsonSerializer.DeserializeAsync<Comment[]>(stream, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
@@ -285,10 +285,10 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
 
             // Act
             var response = await client.GetAsync("/posts/v1/1/comments");
-            var actualComments = await response.Content.ReadFromJsonAsync<Comment[]>();
+            var actualComments = await response.Content.ReadFromJsonAsync<Post>();
 
             // Assert
-            Assert.Equal(expectedComments?.Length, actualComments?.Length);
+            Assert.Equal(expectedComments?.Length, actualComments?.Comments.Length);
         }
 
         [Fact]
@@ -322,7 +322,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
         {
             // Arrange
             var client = _factory.CreateClient();
-            using FileStream stream = File.OpenRead("comment.json");
+            using FileStream stream = File.OpenRead("./Data/comment.json");
             var expectedComment = await JsonSerializer.DeserializeAsync<Comment>(stream, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,

@@ -10,18 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="blogposts.json" />
-    <None Remove="posts.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="blogposts.json">
+    <EmbeddedResource Include="Data/posts.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="posts.json">
+    <EmbeddedResource Include="Data/post.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="post.json">
+    <EmbeddedResource Include="Data/comments.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data/comment.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -50,6 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data/" />
     <Folder Include="Integration\" />
     <Folder Include="Unit\" />
   </ItemGroup>
