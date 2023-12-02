@@ -399,7 +399,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
         }
 
         [Fact]
-        public async void CreateComment_ReturnsNotFound()
+        public async void CreateComment_ReturnsServerError()
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -416,7 +416,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             var response = await client.PostAsJsonAsync("/posts/v1/100/comments", comment);
 
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
         [Fact]

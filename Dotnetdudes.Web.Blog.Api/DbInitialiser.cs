@@ -23,7 +23,7 @@ namespace Dotnetdudes.Web.Blog.Api
                 // create index on email column in comments table if it doesn't exist
                 db.Execute("CREATE INDEX IF NOT EXISTS comments_email_idx ON comments (email)");
                 // create foreign key on postid column in comments table if it doesn't exist
-                db.Execute("ALTER TABLE comments ADD CONSTRAINT comments_postid_fkey FOREIGN KEY (postid) REFERENCES posts (id)");
+                db.Execute("ALTER TABLE comments ADD CONSTRAINT comments_postid_fkey FOREIGN KEY (postid) REFERENCES posts (id) ON DELETE CASCADE");
                 // insert posts into database
                 db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('First Post', 'This is my first post', 'This is the body of my first post', 'Dotnetdude', '2021-01-01')");
                 db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Second Post', 'This is my second post', 'This is the body of my second post', 'Dotnetdude', '2021-01-02')");

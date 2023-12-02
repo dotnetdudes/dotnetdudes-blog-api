@@ -115,10 +115,14 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
             });
 
             // add route for updating a comment
-            group.MapPut("/{id}/comments/{commentId}", async  (IDbConnection db, int id, int commentId, Comment comment) =>
+            group.MapPut("/{id}/comments/{commentId}", async Task<Results<Ok<Comment>, NotFound>>  (IDbConnection db, int id, int commentId, Comment comment) =>
             {
                 // update comment in database
                 var result = await db.ExecuteAsync("UPDATE comments SET body = @Body, author = @Author, email = @Email, updated = @Updated, published = @Published WHERE id = @CommentId", new { id, commentId, comment.Body, comment.Author, comment.Email, comment.Updated, comment.Published });
+                if (result == 0)
+                {
+                    return TypedResults.NotFound();
+                }
                 return TypedResults.Ok(comment);
             });
 
