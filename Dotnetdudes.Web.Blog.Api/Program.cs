@@ -34,6 +34,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStatusCodePages(async statusCodeContext 
+    => await Results.Problem(statusCode: statusCodeContext.HttpContext.Response.StatusCode)
+                 .ExecuteAsync(statusCodeContext.HttpContext));
+
 app.UseExceptionHandler(exceptionHandlerApp 
     => exceptionHandlerApp.Run(async context 
         => await Results.Problem()
