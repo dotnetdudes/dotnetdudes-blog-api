@@ -1,13 +1,8 @@
-using Moq;
-using Moq.Dapper;
-using Xunit;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Data;
 using Dotnetdudes.Web.Blog.Api.Models;
 using Dapper;
 using System.Net.Http.Json;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace Dotnetdudes.Web.Blog.Api.Tests
