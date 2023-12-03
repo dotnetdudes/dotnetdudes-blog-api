@@ -49,8 +49,6 @@
 
   <ItemGroup>
     <Folder Include="Data/" />
-    <Folder Include="Integration\" />
-    <Folder Include="Unit\" />
   </ItemGroup>
 
 </Project>

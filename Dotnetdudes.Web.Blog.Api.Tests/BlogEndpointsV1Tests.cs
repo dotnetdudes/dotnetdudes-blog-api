@@ -4,6 +4,7 @@ using Dotnetdudes.Web.Blog.Api.Models;
 using Dapper;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
 
 namespace Dotnetdudes.Web.Blog.Api.Tests
 {
@@ -14,26 +15,33 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
         public BlogEndpointsV1Tests(BlogApplication factory)
         {
             _factory = factory;
+            CreateDatabase();
         }
 
         public void Dispose()
         {
             // reset database after each test
-            using var db = _factory.Services.CreateScope().ServiceProvider.GetRequiredService<IDbConnection>();
-            db.Execute("TRUNCATE TABLE comments RESTART IDENTITY CASCADE");
-            db.Execute("TRUNCATE TABLE posts RESTART IDENTITY CASCADE");
-            db.Execute("DELETE FROM posts");
-            db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('First Post', 'This is my first post', 'This is the body of my first post', 'Dotnetdude', '2021-01-01')");
-            db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Second Post', 'This is my second post', 'This is the body of my second post', 'Dotnetdude', '2021-01-02')");
-            db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Third Post', 'This is my third post', 'This is the body of my third post', 'Dotnetdude', '2021-01-03')");
-            db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Fourth Post', 'This is my fourth post', 'This is the body of my fourth post', 'Dotnetdude', '2021-01-04')");
-            db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Fifth Post', 'This is my fifth post', 'This is the body of my fifth post', 'Dotnetdude', '2021-01-05')");
-            db.Execute("INSERT INTO posts (title, description, body, author, created) VALUES ('Sixth Post', 'This is my sixth post', 'This is the body of my sixth post', 'Dotnetdude', '2021-01-06')");
+            ClearDatabase();
+            SeedDatabase();
+            
+        }
 
-            db.Execute("INSERT INTO comments (postid, body, author, email, created) VALUES (1, 'This is the first comment on the first post', 'Dotnetdude','john@doe.com', '2021-01-01')");
-            db.Execute("INSERT INTO comments (postid, body, author, email, created) VALUES (1, 'This is the second comment on the first post', 'Dotnetdude','john@doe.com', '2021-01-01')");
-            db.Execute("INSERT INTO comments (postid, body, author, email, created) VALUES (1, 'This is the third comment on the first post', 'Dotnetdude','john@doe.com', '2021-01-01')");
-            db.Execute("INSERT INTO comments (postid, body, author, email, created) VALUES (2, 'This is the first comment on the second post', 'Dotnetdude','john@doe.com', '2021-01-01')");
+        private void CreateDatabase()
+        {
+            using var db = _factory.Services.CreateScope().ServiceProvider.GetRequiredService<IDbConnection>();
+            DBSetup.CreateDatabase(db);
+        }
+
+        private void SeedDatabase()
+        {
+            using var db = _factory.Services.CreateScope().ServiceProvider.GetRequiredService<IDbConnection>();
+            DBSetup.SeedDatabase(db);
+        }
+
+        private void ClearDatabase()
+        {
+            using var db = _factory.Services.CreateScope().ServiceProvider.GetRequiredService<IDbConnection>();
+            DBSetup.ClearDatabase(db);
         }
 
         [Fact]
