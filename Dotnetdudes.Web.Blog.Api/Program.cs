@@ -1,10 +1,25 @@
 using Dotnetdudes.Web.Blog.Api;
 using Dotnetdudes.Web.Blog.Api.Routes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Npgsql;
+using Serilog;
+using Serilog.Events;
 using System.Data;
 
+Log.Logger = new LoggerConfiguration()
+   .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+   .Enrich.FromLogContext()
+   .WriteTo.Console()
+   .CreateBootstrapLogger();
+
+Log.Information("Starting Dotnetdudes Blog Api application");
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) => configuration
+     .ReadFrom.Configuration(context.Configuration)
+     .ReadFrom.Services(services)
+     .Enrich.FromLogContext());
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -38,10 +53,17 @@ app.UseStatusCodePages(async statusCodeContext
     => await Results.Problem(statusCode: statusCodeContext.HttpContext.Response.StatusCode)
                  .ExecuteAsync(statusCodeContext.HttpContext));
 
-app.UseExceptionHandler(exceptionHandlerApp 
-    => exceptionHandlerApp.Run(async context 
-        => await Results.Problem()
-                     .ExecuteAsync(context)));
+app.UseExceptionHandler(exceptionHandlerApp
+    => exceptionHandlerApp.Run(async context
+        => {
+            var error = context?.Features?.Get<IExceptionHandlerFeature>()?.Error;
+            if(error is not null)
+            {
+                Log.Error(error, "Unhandled exception");
+            }            
+            await Results.Problem().ExecuteAsync(context!);
+        })
+    ) ;
 
 // todoV1 endpoints
 app.MapGroup("/posts/v1")
