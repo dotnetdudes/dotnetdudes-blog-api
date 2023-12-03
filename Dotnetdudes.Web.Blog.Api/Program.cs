@@ -1,5 +1,6 @@
 using Dotnetdudes.Web.Blog.Api;
 using Dotnetdudes.Web.Blog.Api.Routes;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Npgsql;
@@ -39,6 +40,8 @@ builder.Services.AddScoped<IDbConnection>(provider =>
     new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddProblemDetails();
+
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();
 

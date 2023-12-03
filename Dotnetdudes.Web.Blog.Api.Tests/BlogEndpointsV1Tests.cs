@@ -164,6 +164,27 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             Assert.Equal(post.Author, actualPost?.Author);
         }
 
+        // create post returns validationproblem
+        [Fact]
+        public async void CreatePost_ReturnsValidationProblem()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var post = new Post
+            {
+                Title = "",
+                Description = "",
+                Body = "",
+                Author = ""
+            };
+
+            // Act
+            var response = await client.PostAsJsonAsync("/posts/v1", post);
+
+            // Assert
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         [Fact]
         public async void UpdatePost_ReturnsOk()
         {
@@ -367,6 +388,28 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+        }
+
+        // create comment returns validationproblem
+        [Fact]
+        public async void CreateComment_ReturnsValidationProblem()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var comment = new Comment
+            {
+                PostId = 1,
+                Body = "",
+                Author = "",
+                Email = "",
+                Created = DateTime.UtcNow
+            };
+
+            // Act
+            var response = await client.PostAsJsonAsync("/posts/v1/1/comments", comment);
+
+            // Assert
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]

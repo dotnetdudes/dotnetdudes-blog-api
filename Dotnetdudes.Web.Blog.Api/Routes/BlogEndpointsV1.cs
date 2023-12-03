@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Dotnetdudes.Web.Blog.Api.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data;
 
@@ -61,8 +62,14 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
             });
 
             // add route for creating a new post
-            group.MapPost("/", async (IDbConnection db, Post post) =>
+            group.MapPost("/", async Task<Results<Created<Post>, NotFound, ValidationProblem>> (IValidator<Post> validator, IDbConnection db, Post post) =>
             {
+                // validate post
+                var validationResult = await validator.ValidateAsync(post);
+                if (!validationResult.IsValid)
+                {
+                    return TypedResults.ValidationProblem(validationResult.ToDictionary());
+                }
                 // insert post into database
                 post.Id = await db.QuerySingleAsync<int>("INSERT INTO posts (title, description, body, author, created) VALUES (@Title, @Description, @Body, @Author, @Created) RETURNING id", post);
                 return TypedResults.Created($"/posts/{post.Id}", post);
@@ -103,8 +110,14 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
             });
 
             // add route for creating a new comment
-            group.MapPost("/{id}/comments", async Task<Results<Created<Comment>, NotFound>> (IDbConnection db, int id, Comment comment) =>
+            group.MapPost("/{id}/comments", async Task<Results<Created<Comment>, NotFound, ValidationProblem>> (IValidator<Comment> validator, IDbConnection db, int id, Comment comment) =>
             {
+                // validate comment
+                var validationResult = await validator.ValidateAsync(comment);
+                if (!validationResult.IsValid)
+                {
+                    return TypedResults.ValidationProblem(validationResult.ToDictionary());
+                }
                 // insert comment into database
                 var result = await db.ExecuteAsync("INSERT INTO comments (postid, body, author, email, created) VALUES (@PostId, @Body, @Author, @Email, @Created)", new { comment.PostId, comment.Body, comment.Author, comment.Email, comment.Created });
                 if (result == 0)
