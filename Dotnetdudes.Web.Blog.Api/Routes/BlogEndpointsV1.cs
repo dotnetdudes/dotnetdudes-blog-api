@@ -76,12 +76,18 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
             });
 
             // add route for updating a post
-            group.MapPut("/{id}", async Task<Results<Ok<Post>, NotFound>> (IDbConnection db, int id, Post post) =>
+            group.MapPut("/{id}", async Task<Results<Ok<Post>, NotFound, ValidationProblem>> (IValidator<Post> validator, IDbConnection db, int id, Post post) =>
             {
                 // set the updated time
                 post.Updated = DateTime.Now;
+                // validate post
+                var validationResult = await validator.ValidateAsync(post);
+                if (!validationResult.IsValid)
+                {
+                    return TypedResults.ValidationProblem(validationResult.ToDictionary());
+                }
                 // update post in database
-                var result = await db.ExecuteAsync("UPDATE posts SET title = @Title, description = @Description, body = @Body, author = @Author, updated = @Updated, published = @Published WHERE id = @Id", new { id, post.Title, post.Description, post.Body, post.Author, post.Updated, post.Published });
+                var result = await db.ExecuteAsync("UPDATE posts SET title = @Title, description = @Description, body = @Body, author = @Author, updated = @Updated WHERE id = @Id", new { id, post.Title, post.Description, post.Body, post.Author, post.Updated });
                 if (result == 0)
                 {
                     return TypedResults.NotFound();
@@ -90,8 +96,18 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
             });
 
             // add route for deleting a post
-            group.MapDelete("/{id}", async Task<Results<NoContent, NotFound>> (IDbConnection db, int id) =>
+            group.MapDelete("/{id}", async Task<Results<NoContent, NotFound, BadRequest>> (IDbConnection db, string id) =>
             {
+                int number;
+                bool success = int.TryParse(id, out number);
+                if (!success)
+                {
+                    return TypedResults.BadRequest();
+                }
+                if (number < 1)
+                {
+                    return TypedResults.BadRequest();
+                }
                 // delete post from database
                 var result = await db.ExecuteAsync("DELETE FROM posts WHERE id = @id", new { id });
                 if (result == 0)
