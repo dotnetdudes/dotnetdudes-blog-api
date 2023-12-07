@@ -302,30 +302,17 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             // Arrange
             var client = _factory.CreateClient();
             using FileStream stream = File.OpenRead("./Data/comments.json");
-            var expectedComments = await JsonSerializer.DeserializeAsync<Comment[]>(stream, new JsonSerializerOptions
+            var expectedComments = await JsonSerializer.DeserializeAsync<List<Comment>>(stream, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
             });
 
             // Act
             var response = await client.GetAsync("/posts/v1/1/comments");
-            var actualComments = await response.Content.ReadFromJsonAsync<Post>();
+            var actualComments = await response.Content.ReadFromJsonAsync<List<Comment>>();
 
             // Assert
-            Assert.Equal(expectedComments?.Length, actualComments?.Comments.Length);
-        }
-
-        [Fact]
-        public async void GetComments_ReturnsNotFound()
-        {
-            // Arrange
-            var client = _factory.CreateClient();
-
-            // Act
-            var response = await client.GetAsync("/posts/v1/100/comments");
-
-            // Assert
-            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(expectedComments?.Count, actualComments?.Count);
         }
 
         [Fact]
@@ -335,7 +322,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/posts/v1/1/comments/1");
+            var response = await client.GetAsync("/posts/v1/comments/1");
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -353,7 +340,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             });
 
             // Act
-            var response = await client.GetAsync("/posts/v1/1/comments/1");
+            var response = await client.GetAsync("/posts/v1/comments/1");
             var actualComment = await response.Content.ReadFromJsonAsync<Comment>();
 
             // Assert
@@ -371,11 +358,27 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/posts/v1/1/comments/100");
+            var response = await client.GetAsync("/posts/v1/comments/100");
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+        } 
+
+        // test for "/{id}/post/comments" endpoint -get single post with comments
+        [Fact]
+        public async void GetPostWithComments_ReturnsOk()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/posts/v1/1/post/comments");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
         }
+
+
 
         [Fact]
         public async void CreateComment_ReturnsCreated()
@@ -478,7 +481,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             };
 
             // Act
-            var response = await client.PutAsJsonAsync("/posts/v1/1/comments/1", comment);
+            var response = await client.PutAsJsonAsync("/posts/v1/comments/1", comment);
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -497,7 +500,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             };
 
             // Act
-            var response = await client.PutAsJsonAsync("/posts/v1/1/comments/1", comment);
+            var response = await client.PutAsJsonAsync("/posts/v1/comments/1", comment);
             var actualComment = await response.Content.ReadFromJsonAsync<Comment>();
 
             // Assert
@@ -519,7 +522,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             };
 
             // Act
-            var response = await client.PutAsJsonAsync("/posts/v1/1/comments/100", comment);
+            var response = await client.PutAsJsonAsync("/posts/v1/comments/100", comment);
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
@@ -532,7 +535,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.DeleteAsync("/posts/v1/1/comments/1");
+            var response = await client.DeleteAsync("/posts/v1/comments/1");
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.NoContent, response.StatusCode);
@@ -545,7 +548,7 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.DeleteAsync("/posts/v1/1/comments/100");
+            var response = await client.DeleteAsync("/posts/v1/comments/100");
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);

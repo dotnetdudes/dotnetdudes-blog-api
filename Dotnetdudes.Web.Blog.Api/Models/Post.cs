@@ -25,7 +25,7 @@ namespace Dotnetdudes.Web.Blog.Api.Models
         public string[] Categories { get; set; } = Array.Empty<string>();
 
         //property for a list of comments
-        public Comment[] Comments { get; set; } = Array.Empty<Comment>();
+        public List<Comment> Comments { get; set; } = new List<Comment>();
 
         // content of blog post
         [Required]
