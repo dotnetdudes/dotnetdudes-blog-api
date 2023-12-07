@@ -1,0 +1,20 @@
+﻿@Dotnetdudes.Web.Blog.Api_HostAddress = https://localhost:7262
+
+GET {{Dotnetdudes.Web.Blog.Api_HostAddress}}/posts/v1
+
+###
+
+POST {{Dotnetdudes.Web.Blog.Api_HostAddress}}/posts/v1
+Content-Type: application/json
+
+{
+  "title": "test post",
+  "description": "this is a post for testing",
+  "body": "the body of the post",
+  "author": "John Morton"
+}
+###
+
+GET {{Dotnetdudes.Web.Blog.Api_HostAddress}}/posts/v1/1
+
+###

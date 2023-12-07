@@ -1,0 +1,23 @@
+[
+    {
+      "id": 1,
+      "postId": 1,
+      "body": "This is the first comment on the first post",
+      "author": "Dotnetdude",
+      "email": "john@doe.com"
+    },
+    {
+      "id": 2,
+      "postId": 1,
+      "body": "This is the second comment on the first post",
+      "author": "Dotnetdude",
+      "email": "john@doe.com"
+    },
+    {
+      "id": 3,
+      "postId": 1,
+      "body": "This is the third comment on the first post",
+      "author": "Dotnetdude",
+      "email": "john@doe.com"
+    }   
+  ]

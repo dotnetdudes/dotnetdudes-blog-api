@@ -1,0 +1,15 @@
+{
+    "id": 1,
+    "title": "First Post",
+    "Title": "First Post",
+    "slug": "first-post",
+    "description": "This is my first post",
+    "tags": [],
+    "categories": [],
+    "comments": [],
+    "body": "This is the body of my first post",
+    "author": "Dotnetdude",
+    "created": "2021-01-01T00:00:00",
+    "updated": null,
+    "published": null
+  }
