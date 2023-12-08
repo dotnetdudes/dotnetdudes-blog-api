@@ -48,7 +48,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    // DbInitialiser.Initialise(app);
+    DbInitialiser.Initialise(app);
     app.UseSwagger();
     app.UseSwaggerUI();
 }
