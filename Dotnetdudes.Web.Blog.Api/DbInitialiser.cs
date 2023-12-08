@@ -1,6 +1,6 @@
-﻿using Dotnetdudes.Web.Blog.Api.Models;
+﻿using Dapper;
+using Dotnetdudes.Web.Blog.Api.Models;
 using System.Data;
-using Dapper;
 
 namespace Dotnetdudes.Web.Blog.Api
 {
