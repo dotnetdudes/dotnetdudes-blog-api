@@ -31,8 +31,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = "https://localhost:5001";
-        options.Audience = "Dotnetdudes.Web.Blog.Api";
+        // keycloak client settings
+        options.Authority = "https://identity.dotnetdudes.com/realms/dotnetdudes";
+        options.Audience = "account";
     });
 
 // add postgressql database connection
