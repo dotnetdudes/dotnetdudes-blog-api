@@ -749,5 +749,8 @@ namespace Dotnetdudes.Web.Blog.Api.Tests.Unit
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             Assert.Equal(expectedComments?.Count, comments?.ToList().Count);
         }
+
+        // test the "/posts/comments/multi" post endpoint - get all posts with comments
+        
     }
 }

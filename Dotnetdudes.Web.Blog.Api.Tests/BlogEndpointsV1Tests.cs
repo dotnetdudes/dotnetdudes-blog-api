@@ -126,6 +126,143 @@ namespace Dotnetdudes.Web.Blog.Api.Tests
             Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
         }
 
+        // test for "/posts/comments/multi" endpoint -get multiple posts with comments
+        [Fact]
+        public async void GetPostsWithComments_ReturnsOk()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/posts/v1/comments/multi");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+        }
+
+        [Fact]
+        public async void GetPostsWithComments_ReturnsPosts()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            using FileStream stream = File.OpenRead("./Data/posts.json");
+            var expectedPosts = await JsonSerializer.DeserializeAsync<Post[]>(stream, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
+
+            // Act
+            var response = await client.GetAsync("/posts/v1/comments/multi");
+            var actualPosts = await response.Content.ReadFromJsonAsync<Post[]>();
+
+            // Assert
+            Assert.Equal(expectedPosts?.Length, actualPosts?.Length);
+        }
+
+        [Fact]
+        public async void GetPostsWithComments_ReturnsComments()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            using FileStream stream = File.OpenRead("./Data/comments.json");
+            var expectedComments = await JsonSerializer.DeserializeAsync<Comment[]>(stream, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
+
+            // Act
+            var response = await client.GetAsync("/posts/v1/comments/multi");
+            var actualPosts = await response.Content.ReadFromJsonAsync<Post[]>();
+
+            // Assert
+            Assert.Equal(expectedComments?.Length, actualPosts?.SelectMany(p => p.Comments).Count());
+        }
+
+        [Fact]
+        public async void GetPostsWithComments_ReturnsNotFound()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/posts/v1/comments/multi/100");
+
+            // Assert
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        // tests for "/{id}/post/comments/multi" endpoint -get single post with comments
+        [Fact]
+        public async void GetSinglePostWithComments_ReturnsOk()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/posts/v1/1/post/comments/multi");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+        }
+
+        [Fact]
+        public async void GetSinglePostWithComments_ReturnsPost()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            using FileStream stream = File.OpenRead("./Data/post.json");
+            var expectedPost = await JsonSerializer.DeserializeAsync<Post>(stream, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
+
+            // Act
+            var response = await client.GetAsync("/posts/v1/1/post/comments/multi");
+            var actualPost = await response.Content.ReadFromJsonAsync<Post>();
+
+            // Assert
+            Assert.Equal(expectedPost?.Id, actualPost?.Id);
+            Assert.Equal(expectedPost?.Title, actualPost?.Title);
+            Assert.Equal(expectedPost?.Description, actualPost?.Description);
+            Assert.Equal(expectedPost?.Body, actualPost?.Body);
+            Assert.Equal(expectedPost?.Author, actualPost?.Author);
+            Assert.Equal(expectedPost?.Created, actualPost?.Created);
+            Assert.Equal(expectedPost?.Updated, actualPost?.Updated);
+            Assert.Equal(expectedPost?.Published, actualPost?.Published);
+        }
+
+        [Fact]
+        public async void GetSinglePostWithComments_ReturnsComments()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            using FileStream stream = File.OpenRead("./Data/comments.json");
+            var expectedComments = await JsonSerializer.DeserializeAsync<Comment[]>(stream, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
+
+            // Act
+            var response = await client.GetAsync("/posts/v1/1/post/comments/multi");
+            var actualPost = await response.Content.ReadFromJsonAsync<Post>();
+
+            // Assert
+            Assert.Equal(expectedComments?.Length, actualPost?.Comments?.Count);
+        }
+
+        [Fact]
+        public async void GetSinglePostWithComments_ReturnsNotFound()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/posts/v1/100/post/comments/multi");
+
+            // Assert
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+        }
+
         [Fact]
         public async void CreatePost_ReturnsCreated()
         {

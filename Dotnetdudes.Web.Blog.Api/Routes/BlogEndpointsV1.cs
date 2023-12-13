@@ -92,7 +92,6 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
                 return TypedResults.Ok(post);
             });
 
-            // add route for getting all posts with comments using Dapper and a dictionary
             group.MapGet("/posts/comments/multi", async (IDbConnection db) =>
             {
                 var postsDictionary = new Dictionary<int, Post>();
@@ -119,6 +118,8 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
             // add route for getting a single post with comments using Dapper and a dictionary
             group.MapGet("/{id}/post/comments/multi", async Task<Results<Ok<Post>, NotFound, BadRequest>> (IDbConnection db, string id) =>
             {
+                // generate unit test for this endpoint in BlogEndpointsV1Tests.cs
+                
                 bool success = int.TryParse(id, out int number);
                 if (!success)
                 {
