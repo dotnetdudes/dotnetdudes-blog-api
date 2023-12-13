@@ -92,6 +92,60 @@ namespace Dotnetdudes.Web.Blog.Api.Routes
                 return TypedResults.Ok(post);
             });
 
+            // add route for getting all posts with comments using Dapper and a dictionary
+            group.MapGet("/posts/comments/multi", async (IDbConnection db) =>
+            {
+                var postsDictionary = new Dictionary<int, Post>();
+                await db.QueryAsync<Post, Comment, Post>(
+                    "SELECT * FROM posts p LEFT JOIN comments c ON p.id = c.postid",
+                    (post, comment) =>
+                    {
+                        if (!postsDictionary.TryGetValue(post.Id, out var existingPost))
+                        {
+                            postsDictionary.Add(post.Id, post);
+                            existingPost = post;
+                        }
+                        if (existingPost.Comments is null)
+                        {
+                            existingPost.Comments = new List<Comment>();
+                        }
+                        existingPost.Comments.Add(comment);
+                        return existingPost;
+                    },
+                    splitOn: "Id");
+                return TypedResults.Json(postsDictionary.Values);
+            });
+
+            // add route for getting a single post with comments using Dapper and a dictionary
+            group.MapGet("/{id}/post/comments/multi", async Task<Results<Ok<Post>, NotFound, BadRequest>> (IDbConnection db, string id) =>
+            {
+                bool success = int.TryParse(id, out int number);
+                if (!success)
+                {
+                    return TypedResults.BadRequest();
+                }
+                var postsDictionary = new Dictionary<int, Post>();
+                await db.QueryAsync<Post, Comment, Post>(
+                    "SELECT * FROM posts p LEFT JOIN comments c ON p.id = c.postid WHERE p.id = @number",
+                    (post, comment) =>
+                    {
+                        if (!postsDictionary.TryGetValue(post.Id, out var existingPost))
+                        {
+                            postsDictionary.Add(post.Id, post);
+                            existingPost = post;
+                        }
+                        if (existingPost.Comments is null)
+                        {
+                            existingPost.Comments = new List<Comment>();
+                        }
+                        existingPost.Comments.Add(comment);
+                        return existingPost;
+                    },
+                    new { number },
+                    splitOn: "Id");
+                return postsDictionary.Values.Count == 0 ? TypedResults.NotFound() : TypedResults.Ok(postsDictionary.Values.First());
+            });
+
             // add route for creating a new post
             group.MapPost("/", async Task<Results<Created<Post>, NotFound, ValidationProblem>> (IValidator<Post> validator, IDbConnection db, Post post) =>
             {

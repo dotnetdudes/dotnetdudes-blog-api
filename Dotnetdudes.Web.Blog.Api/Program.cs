@@ -48,7 +48,14 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    DbInitialiser.Initialise(app);
+    try
+    {
+        DbInitialiser.Initialise(app);
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Error initialising database");
+    }
     app.UseSwagger();
     app.UseSwaggerUI();
 }
